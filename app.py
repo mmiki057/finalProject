@@ -10,11 +10,11 @@ from datetime import datetime
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder='app/templates',
+            static_folder='app/static')
 
-# Support both psycopg2 and psycopg3
 database_url = os.getenv('DATABASE_URL', 'postgresql://localhost/library_db')
-# psycopg3 uses postgresql:// instead of postgres://
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
@@ -23,15 +23,9 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-change-me')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-
-
-# ===== HTML ROUTES =====
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-# ===== API ROUTES - BOOKS =====
 @app.route('/api/books', methods=['GET'])
 def get_books():
     search = request.args.get('search', '')
@@ -151,9 +145,6 @@ def delete_book(id):
     db.session.delete(book)
     db.session.commit()
     return '', 204
-
-
-# ===== API ROUTES - AUTHORS =====
 @app.route('/api/authors', methods=['GET', 'POST'])
 def authors():
     if request.method == 'GET':
@@ -181,9 +172,6 @@ def author(id):
         db.session.delete(author)
         db.session.commit()
         return '', 204
-
-
-# ===== API ROUTES - PUBLISHERS =====
 @app.route('/api/publishers', methods=['GET', 'POST'])
 def publishers():
     if request.method == 'GET':
@@ -195,9 +183,6 @@ def publishers():
         db.session.add(pub)
         db.session.commit()
         return jsonify({'id': pub.id}), 201
-
-
-# ===== API ROUTES - GENRES, TOPICS, CATEGORIES =====
 @app.route('/api/genres', methods=['GET', 'POST'])
 def genres():
     if request.method == 'GET':
@@ -243,9 +228,6 @@ def series():
         db.session.add(ser)
         db.session.commit()
         return jsonify({'id': ser.id}), 201
-
-
-# ===== LIBRARY STATS =====
 @app.route('/api/library/stats')
 def library_stats():
     total_books = Book.query.count()
@@ -262,9 +244,6 @@ def library_stats():
             'authors': [f'{a.first_name} {a.last_name}' for a in b.authors]
         } for b in Book.query.order_by(Book.created_at.desc()).limit(5).all()]
     })
-
-
-# ===== EXPORT/IMPORT =====
 @app.route('/api/export/csv')
 def export_csv():
     books = Book.query.all()
@@ -313,12 +292,8 @@ def export_json():
         as_attachment=True,
         download_name=f'library_{datetime.now().strftime("%Y%m%d")}.json'
     )
-
-
-# ===== DATABASE INIT =====
 @app.cli.command()
 def init_db():
-    """Initialize the database."""
     db.create_all()
     print('Database initialized!')
 

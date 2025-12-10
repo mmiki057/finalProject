@@ -1,31 +1,19 @@
-"""
-Initialize database with sample data for testing
-Run this after setting up the database to populate with example books
-"""
-
 from app import app
 from models import db, Book, Author, Publisher, Series, Genre, Topic, Category
 
 def init_sample_data():
-    """Initialize database with sample data"""
-
     with app.app_context():
-        # Clear existing data (optional - comment out if you want to keep existing data)
         print("Clearing existing data...")
         db.drop_all()
         db.create_all()
 
         print("Creating sample data...")
-
-        # Create Publishers
         penguin = Publisher(name="Penguin Random House", country="USA")
         harpercollins = Publisher(name="HarperCollins", country="USA")
         oxford = Publisher(name="Oxford University Press", country="UK")
 
         db.session.add_all([penguin, harpercollins, oxford])
         db.session.commit()
-
-        # Create Authors
         author1 = Author(first_name="George", last_name="Orwell",
                         biography="English novelist and essayist")
         author2 = Author(first_name="Jane", last_name="Austen",
@@ -37,8 +25,6 @@ def init_sample_data():
 
         db.session.add_all([author1, author2, author3, author4])
         db.session.commit()
-
-        # Create Genres
         fiction = Genre(name="Fiction", description="Literary fiction")
         fantasy = Genre(name="Fantasy", description="Fantasy literature")
         horror = Genre(name="Horror", description="Horror fiction")
@@ -47,32 +33,24 @@ def init_sample_data():
 
         db.session.add_all([fiction, fantasy, horror, classic, romance])
         db.session.commit()
-
-        # Create Categories
         favorites = Category(name="Favorites", description="My favorite books")
         to_read = Category(name="To Read", description="Books to read")
         reference = Category(name="Reference", description="Reference books")
 
         db.session.add_all([favorites, to_read, reference])
         db.session.commit()
-
-        # Create Topics
         politics = Topic(name="Politics", description="Political themes")
         society = Topic(name="Society", description="Social commentary")
         magic = Topic(name="Magic", description="Magical elements")
 
         db.session.add_all([politics, society, magic])
         db.session.commit()
-
-        # Create Series
         hp_series = Series(name="Harry Potter", description="Fantasy series about a young wizard",
                           total_books=7)
         hp_series.authors.append(author3)
 
         db.session.add(hp_series)
         db.session.commit()
-
-        # Create Books
         book1 = Book(
             title="1984",
             isbn="9780451524935",
