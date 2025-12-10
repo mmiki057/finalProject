@@ -1,0 +1,108 @@
+@startuml Class Diagram
+
+class Book {
+  - id: Integer
+  - title: String
+  - isbn: String
+  - publication_year: Integer
+  - pages: Integer
+  - language: String
+  - description: Text
+  - reading_status: String
+  - current_page: Integer
+  - notes: Text
+  - rating: Float
+  - date_started: Date
+  - date_completed: Date
+  - series_position: Integer
+  - created_at: DateTime
+  - publisher_id: Integer
+  - series_id: Integer
+  - category_id: Integer
+  + __init__()
+  + __repr__(): String
+  + reading_progress_percentage(): Float
+}
+
+class Author {
+  - id: Integer
+  - first_name: String
+  - last_name: String
+  - biography: Text
+  + __init__()
+  + __repr__(): String
+}
+
+class Publisher {
+  - id: Integer
+  - name: String
+  - country: String
+  + __init__()
+  + __repr__(): String
+}
+
+class Series {
+  - id: Integer
+  - name: String
+  - description: Text
+  - total_books: Integer
+  + __init__()
+  + __repr__(): String
+}
+
+class Genre {
+  - id: Integer
+  - name: String
+  - description: Text
+  + __init__()
+  + __repr__(): String
+}
+
+class Topic {
+  - id: Integer
+  - name: String
+  - description: Text
+  + __init__()
+  + __repr__(): String
+}
+
+class Category {
+  - id: Integer
+  - name: String
+  - description: Text
+  + __init__()
+  + __repr__(): String
+}
+
+' Relationships
+
+Publisher "1" -- "0..*" Book : publishes >
+Series "0..1" -- "0..*" Book : contains >
+Category "0..1" -- "0..*" Book : categorizes >
+
+Book "0..*" -- "0..*" Author : written by >
+Book "0..*" -- "0..*" Genre : belongs to >
+Book "0..*" -- "0..*" Topic : covers >
+Series "0..*" -- "1..*" Author : created by >
+
+note right of Book
+  Reading Status:
+  - unread
+  - reading
+  - completed
+end note
+
+note right of Publisher
+  Business Rule:
+  Each publisher must have
+  at least one book
+end note
+
+note right of Series
+  Business Rule:
+  Each series must have
+  at least one book and
+  at least one author
+end note
+
+@enduml

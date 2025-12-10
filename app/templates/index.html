@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Home Library</h1>
+            <div class="header-actions">
+                <button onclick="showAddBookForm()" class="btn-primary">+ Add Book</button>
+                <button onclick="exportData('csv')" class="btn-secondary">Export CSV</button>
+                <button onclick="exportData('json')" class="btn-secondary">Export JSON</button>
+            </div>
+        </header>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-container" id="stats">
+            <div class="stat-card">
+                <h3>Total Books</h3>
+                <p class="stat-value" id="totalBooks">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Currently Reading</h3>
+                <p class="stat-value" id="readingBooks">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <p class="stat-value" id="completedBooks">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Authors</h3>
+                <p class="stat-value" id="totalAuthors">0</p>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search books..." oninput="loadBooks()">
+            <select id="statusFilter" onchange="loadBooks()">
+                <option value="">All Status</option>
+                <option value="unread">Unread</option>
+                <option value="reading">Reading</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+
+        <!-- Books Grid -->
+        <div class="books-grid" id="booksGrid">
+            <!-- Books will be loaded here -->
+        </div>
+
+        <!-- Add/Edit Book Modal -->
+        <div id="bookModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle">Add Book</h2>
+                <form id="bookForm" onsubmit="saveBook(event)">
+                    <input type="hidden" id="bookId">
+
+                    <label>Title*</label>
+                    <input type="text" id="bookTitle" required>
+
+                    <label>ISBN</label>
+                    <input type="text" id="bookIsbn">
+
+                    <label>Publication Year</label>
+                    <input type="number" id="bookYear">
+
+                    <label>Pages</label>
+                    <input type="number" id="bookPages">
+
+                    <label>Language</label>
+                    <input type="text" id="bookLanguage">
+
+                    <label>Description</label>
+                    <textarea id="bookDescription" rows="3"></textarea>
+
+                    <label>Publisher*</label>
+                    <select id="bookPublisher" required></select>
+                    <button type="button" onclick="showQuickAdd('publisher')" class="btn-link">+ Add Publisher</button>
+
+                    <label>Authors</label>
+                    <select id="bookAuthors" multiple></select>
+                    <button type="button" onclick="showQuickAdd('author')" class="btn-link">+ Add Author</button>
+
+                    <label>Genres</label>
+                    <select id="bookGenres" multiple></select>
+
+                    <label>Series</label>
+                    <select id="bookSeries">
+                        <option value="">No Series</option>
+                    </select>
+
+                    <label>Category</label>
+                    <select id="bookCategory">
+                        <option value="">No Category</option>
+                    </select>
+
+                    <label>Reading Status</label>
+                    <select id="bookStatus">
+                        <option value="unread">Unread</option>
+                        <option value="reading">Reading</option>
+                        <option value="completed">Completed</option>
+                    </select>
+
+                    <label>Current Page</label>
+                    <input type="number" id="bookCurrentPage" min="0">
+
+                    <label>Rating (0-5)</label>
+                    <input type="number" id="bookRating" min="0" max="5" step="0.5">
+
+                    <label>Notes</label>
+                    <textarea id="bookNotes" rows="3"></textarea>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-primary">Save</button>
+                        <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

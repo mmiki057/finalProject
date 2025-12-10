@@ -1,0 +1,54 @@
+@startuml Activity Diagram - Adding a New Book
+
+start
+
+:User clicks "Add Book" button;
+:System displays book form;
+
+:User enters book details;
+note right
+  - Title
+  - ISBN
+  - Publication Year
+  - Pages
+  - Language
+  - Description
+end note
+
+:User selects publisher;
+
+if (Publisher exists?) then (no)
+  :User clicks "Add Publisher";
+  :Enter publisher name;
+  :System creates publisher;
+else (yes)
+endif
+
+:User selects authors;
+
+if (Author exists?) then (no)
+  :User clicks "Add Author";
+  :Enter author name;
+  :System creates author;
+else (yes)
+endif
+
+:User selects genres (optional);
+:User selects category (optional);
+:User selects series (optional);
+:User sets reading status;
+:User submits form;
+
+if (Validation successful?) then (yes)
+  :System saves book to database;
+  :System updates library statistics;
+  :System displays success message;
+  :System refreshes book list;
+  stop
+else (no)
+  :System displays error message;
+  :Return to form;
+  stop
+endif
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml Sequence Diagram - Update Reading Progress
+
+actor User
+participant "Web Browser" as Browser
+participant "Flask App" as Flask
+participant "Database" as DB
+
+User -> Browser: Open book details
+Browser -> Flask: GET /api/books/{id}
+Flask -> DB: SELECT book
+DB --> Flask: Book data
+Flask --> Browser: JSON response
+Browser --> User: Display book details
+
+User -> Browser: Update reading progress\n(status, current page, rating)
+Browser -> Flask: PUT /api/books/{id}
+activate Flask
+
+Flask -> DB: BEGIN TRANSACTION
+activate DB
+
+Flask -> DB: UPDATE book SET\nreading_status=?,\ncurrent_page=?,\nrating=?
+DB --> Flask: Success
+
+Flask -> DB: COMMIT TRANSACTION
+deactivate DB
+
+Flask --> Browser: HTTP 200 OK\n{message: "Book updated"}
+deactivate Flask
+
+Browser -> Flask: GET /api/library/stats
+Flask -> DB: SELECT COUNT(*)\nGROUP BY reading_status
+DB --> Flask: Statistics data
+Flask --> Browser: Updated stats
+
+Browser --> User: Display success message\nand updated progress
+
+@enduml
