@@ -48,12 +48,19 @@ python app.py
 
 The database will be created automatically on first run.
 
-5. Run the application:
+5. (Optional) Load sample data for testing:
+```bash
+python init_sample_data.py
+```
+
+This will create example books, authors, publishers, etc.
+
+6. Run the application:
 ```bash
 python app.py
 ```
 
-6. Open browser: http://localhost:5000
+7. Open browser: http://localhost:5000
 
 ## Features
 
