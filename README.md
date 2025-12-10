@@ -147,7 +147,5 @@ python -m py_compile app.py models.py
 
 **Can't install dependencies?**
 - Update pip: `pip install --upgrade pip`
-
-## License
-
-Educational project for Object-Oriented Programming course at UEK.
+- On Python 3.13+, psycopg3 is used instead of psycopg2
+- If psycopg fails, try: `pip install psycopg2-binary` (for older Python)
