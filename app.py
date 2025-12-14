@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_file
-from models import db, Book, Author, Publisher, Series, Genre, Topic, Category
+from models import db, Book, Author, Publisher, Series, Genre, Topic, Category, RecommendedBook
 from sqlalchemy import func, or_
 import os
 from dotenv import load_dotenv
@@ -7,6 +7,7 @@ import csv
 import json
 import io
 from datetime import datetime
+from collections import Counter
 
 load_dotenv()
 
@@ -292,6 +293,70 @@ def export_json():
         as_attachment=True,
         download_name=f'library_{datetime.now().strftime("%Y%m%d")}.json'
     )
+
+
+@app.route('/api/recommendations')
+def get_recommendations():
+
+    completed_books = Book.query.filter_by(reading_status='completed').all()
+
+    if not completed_books:
+        recommendations = RecommendedBook.query.order_by(
+            RecommendedBook.average_rating.desc()
+        ).limit(3).all()
+    else:
+        genre_counter = Counter()
+        for book in completed_books:
+            for genre in book.genres:
+                genre_counter[genre.id] += 1
+
+        top_genres = [genre_id for genre_id, _ in genre_counter.most_common(3)]
+
+        if top_genres:
+            recommendations = db.session.query(RecommendedBook).join(
+                RecommendedBook.genres
+            ).filter(
+                Genre.id.in_(top_genres)
+            ).order_by(
+                RecommendedBook.average_rating.desc()
+            ).limit(10).all()
+
+            seen = set()
+            unique_recommendations = []
+            for rec in recommendations:
+                if rec.id not in seen:
+                    seen.add(rec.id)
+                    unique_recommendations.append(rec)
+                    if len(unique_recommendations) == 3:
+                        break
+
+            recommendations = unique_recommendations
+        else:
+            recommendations = RecommendedBook.query.order_by(
+                RecommendedBook.average_rating.desc()
+            ).limit(5).all()
+
+    return jsonify({
+        'user_reading_stats': {
+            'completed_books': len(completed_books),
+            'favorite_genres': [
+                Genre.query.get(genre_id).name
+                for genre_id, _ in Counter(
+                    genre.id for book in completed_books for genre in book.genres
+                ).most_common(3)
+            ] if completed_books else []
+        },
+        'recommendations': [{
+            'id': rec.id,
+            'title': rec.title,
+            'author': rec.author_name,
+            'publication_year': rec.publication_year,
+            'pages': rec.pages,
+            'rating': rec.average_rating,
+            'description': rec.description,
+            'genres': [{'id': g.id, 'name': g.name} for g in rec.genres]
+        } for rec in recommendations]
+    })
 @app.cli.command()
 def init_db():
     db.create_all()

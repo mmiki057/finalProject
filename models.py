@@ -3,7 +3,6 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-# Ассоциативные таблицы для many-to-many связей
 book_authors = db.Table('book_authors',
     db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True),
     db.Column('author_id', db.Integer, db.ForeignKey('authors.id'), primary_key=True)
@@ -22,6 +21,11 @@ book_topics = db.Table('book_topics',
 series_authors = db.Table('series_authors',
     db.Column('series_id', db.Integer, db.ForeignKey('series.id'), primary_key=True),
     db.Column('author_id', db.Integer, db.ForeignKey('authors.id'), primary_key=True)
+)
+
+recommended_book_genres = db.Table('recommended_book_genres',
+    db.Column('recommended_book_id', db.Integer, db.ForeignKey('recommended_books.id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
 )
 
 
@@ -95,7 +99,6 @@ class Book(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
 
-    # Основная информация
     title = db.Column(db.String(300), nullable=False)
     isbn = db.Column(db.String(13))
     publication_year = db.Column(db.Integer)
@@ -103,7 +106,6 @@ class Book(db.Model):
     language = db.Column(db.String(50))
     description = db.Column(db.Text)
 
-    # Прогресс чтения
     reading_status = db.Column(db.String(20), default='unread')  # unread, reading, completed
     current_page = db.Column(db.Integer, default=0)
     notes = db.Column(db.Text)
@@ -111,7 +113,6 @@ class Book(db.Model):
     date_started = db.Column(db.Date)
     date_completed = db.Column(db.Date)
 
-    # Внешние ключи
     publisher_id = db.Column(db.Integer, db.ForeignKey('publishers.id'), nullable=False)
     series_id = db.Column(db.Integer, db.ForeignKey('series.id'))
     series_position = db.Column(db.Integer)
@@ -119,10 +120,28 @@ class Book(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Many-to-many отношения
     authors = db.relationship('Author', secondary=book_authors, backref='books')
     genres = db.relationship('Genre', secondary=book_genres, backref='books')
     topics = db.relationship('Topic', secondary=book_topics, backref='books')
 
     def __repr__(self):
         return f'<Book {self.title}>'
+
+
+class RecommendedBook(db.Model):
+    __tablename__ = 'recommended_books'
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(300), nullable=False)
+    author_name = db.Column(db.String(200), nullable=False)
+    isbn = db.Column(db.String(13))
+    publication_year = db.Column(db.Integer)
+    pages = db.Column(db.Integer)
+    language = db.Column(db.String(50), default='English')
+    description = db.Column(db.Text)
+    average_rating = db.Column(db.Float)
+
+    genres = db.relationship('Genre', secondary=recommended_book_genres, backref='recommended_books')
+
+    def __repr__(self):
+        return f'<RecommendedBook {self.title}>'

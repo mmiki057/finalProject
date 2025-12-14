@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTopics();
     loadCategories();
     loadSeries();
+    loadRecommendations();
 });
 
 // Load library statistics
@@ -279,5 +280,50 @@ window.onclick = function(event) {
     const modal = document.getElementById('bookModal');
     if (event.target === modal) {
         closeModal();
+    }
+}
+
+// Load recommendations
+async function loadRecommendations() {
+    try {
+        const response = await fetch('/api/recommendations');
+        const data = await response.json();
+
+        const section = document.getElementById('recommendationsSection');
+        const intro = document.getElementById('recommendationsIntro');
+        const grid = document.getElementById('recommendationsGrid');
+
+        // Show recommendations section if we have data
+        if (data.recommendations && data.recommendations.length > 0) {
+            section.style.display = 'block';
+
+            // Update intro text
+            const stats = data.user_reading_stats;
+            if (stats.completed_books > 0 && stats.favorite_genres.length > 0) {
+                intro.textContent = `Based on your ${stats.completed_books} completed book(s) in ${stats.favorite_genres.join(', ')}, here are some recommendations:`;
+            } else {
+                intro.textContent = 'Here are some top-rated books to get you started:';
+            }
+
+            // Render recommendations
+            grid.innerHTML = data.recommendations.map(rec => `
+                <div class="recommendation-card">
+                    <h3>${rec.title}</h3>
+                    <p class="recommendation-author">by ${rec.author}</p>
+                    <div class="recommendation-info">
+                        <span class="recommendation-year">${rec.publication_year || 'N/A'}</span>
+                        <span class="recommendation-pages">${rec.pages || 'N/A'} pages</span>
+                    </div>
+                    <div class="recommendation-genres">
+                        ${rec.genres.map(g => `<span class="genre-tag">${g.name}</span>`).join('')}
+                    </div>
+                    <p class="recommendation-description">${rec.description || ''}</p>
+                </div>
+            `).join('');
+        } else {
+            section.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error loading recommendations:', error);
     }
 }
