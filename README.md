@@ -1,21 +1,21 @@
 Home Library Management App
 
-A simple web application for managing your personal book collection.
+Web application for managing your personal book collection.
 
 Features
 
-- Book Management: Add, edit, delete, search and filter books
-- Reading Progress Tracking: Track reading status, current page, ratings and notes
-- Organization: Categorize by genres, topics, categories, and series
-- Multi-entity Support: Books, Authors, Publishers, Series, Genres, Topics, Categories
-- Statistics Dashboard: View library overview and reading statistics
-- Data Export: Export library to CSV or JSON format
+Book Management: Add, edit, delete, search and filter books
+Reading Progress Tracking: Track reading status, current page, ratings and notes
+Organization: Categorize by genres, topics, categories, and series
+Multi-entity Support: Books, Authors, Publishers, Series, Genres, Topics, Categories
+Statistics Dashboard: View library overview and reading statistics
+Data Export: Export library to CSV or JSON format
 
 Technologies
 
-- Backend: Python 3 + Flask + SQLAlchemy
-- Database: PostgreSQL
-- Frontend: HTML + CSS + Vanilla JavaScript
+Backend: Python 3 + Flask + SQLAlchemy
+Database: PostgreSQL
+Frontend: HTML + CSS + Vanilla JavaScript
 
 Setup and Run
 
@@ -51,13 +51,13 @@ Database Schema
 
 The application implements these relationships:
 
-- Each book has exactly one publisher
-- Each book can have many authors (0 or more)
-- Each book can belong to one series (optional)
-- Each book can have many genres (0 or more)
-- Each book can have many topics (0 or more)
-- Each book can belong to one category (optional)
-- Each series can have many authors (1 or more)
+Each book has exactly one publisher
+Each book can have many authors (0 or more)
+Each book can belong to one series (optional)
+Each book can have many genres (0 or more)
+Each book can have many topics (0 or more)
+Each book can belong to one category (optional)
+Each series can have many authors (1 or more)
 
 Quick Start Commands
 
